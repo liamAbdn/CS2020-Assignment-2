@@ -142,6 +142,7 @@ public class BudgetBase extends JPanel {    // based on Swing JPanel
         double wages = getTextFieldValue(wagesField);
         double loans = getTextFieldValue(loansField);
         double other = getTextFieldValue(otherField);
+        double tax = 0;
 
         // clear total field and return if any value is NaN (error)
         if (Double.isNaN(wages) || Double.isNaN(loans)) {
@@ -151,7 +152,50 @@ public class BudgetBase extends JPanel {    // based on Swing JPanel
         }
 
         // otherwise calculate total income and update text field
-        double totalIncome = wages + loans + other;
+        double taxable = wages + other; //seperate taxable income.
+
+        //tax calculation assuming 0 starting point for the tax year
+        if (taxable > 12570) { //>12570, <=16537 tax band
+            if (taxable <= 16537) {
+                tax = tax + ((taxable-12570)*0.19); //tax calculation if taxable is less than or = 16537
+            } else{
+                tax = tax + ((16537-12570)*0.19); //tax calculation if taxable is more than 16537
+            }
+        }
+        if (taxable > 16537) { //>16537, <=29526 tax band
+            if (taxable <= 29526) {
+                tax = tax + ((taxable-16537)*0.2); //tax calculation if taxable is less than or = 29526
+            } else{
+                tax = tax + ((29526-16537)*0.2); //tax calculation if taxable is more than 29526
+            }
+        }
+        if (taxable > 29526) { //>29526, <=43662 tax band
+            if (taxable <= 43662) {
+                tax = tax + ((taxable-29526)*0.21); //tax calculation if taxable is less than or = 43662
+            } else{
+                tax = tax + ((43662-29526)*0.21); //tax calculation if taxable is more than 43662
+            }
+        }
+        if (taxable > 43662) { //>43662, <=75000 tax band
+            if (taxable <= 75000) {
+                tax = tax + ((taxable-43662)*0.42); //tax calculation if taxable is less than or = 75000
+            } else{
+                tax = tax + ((75000-43662)*0.42); //tax calculation if taxable is more than 75000
+            }
+        }
+        if (taxable > 75000) { //>75000, <=125140 tax band
+            if (taxable <= 125140) {
+                tax = tax + ((taxable-75000)*0.45); //tax calculation if taxable is less than or = 125140
+            } else{
+                tax = tax + ((125140-75000)*0.45); //tax calculation if taxable is more than 125140
+            }
+        }
+        if (taxable > 125140){
+            tax = tax + ((taxable-125140)*0.48); //tax calculation if taxable> max tax bracket
+        }
+
+        double totalIncome = (taxable-tax) + loans;
+
         totalIncomeField.setText(String.format("%.2f",totalIncome));  // format with 2 digits after the .
         return totalIncome;
     }
